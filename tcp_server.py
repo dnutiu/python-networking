@@ -39,7 +39,7 @@ while True:
             SOCKFD, ADDR = SERVER_SOCKET.accept()
             CONNECTION_LIST.append(SOCKFD) # add socket descriptor
             print("Client ({0}, {1}) connected".format(ADDR[0], ADDR[1]))
-            broadcast_data(SOCKFD, "[{0}:{1}] entered room\n".format(ADDR[0],
+            broadcast_data(SOCKFD, "Client ({0}:{1}) entered room\n".format(ADDR[0],
                                     ADDR[1]).encode())
         else: # Some incoming message from a client
             try: # Data recieved from client, process it
@@ -49,10 +49,9 @@ while True:
                     print(message, end = "")
                     broadcast_data(SOCK, message.encode())
             except Exception as msg:
-                print(type(msg).__name__, " occured just now")
+                print(type(msg).__name__, msg)
                 broadcast_data(SOCK, "Client ({0}, {1}) is offline\n"
                                      .format(ADDR[0], ADDR[1]).encode())
-                print("Client ({}, {}) is offline".format(ADDR[0], ADDR[1]))
                 SOCK.close()
                 try:
                     CONNECTION_LIST.remove(SOCK)
