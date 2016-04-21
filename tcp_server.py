@@ -15,7 +15,7 @@ def broadcast_data (sock, message):
                 try:
                     CONNECTION_LIST.remove(socket)
                 except ValueError:
-                    print("Can't remove socket")
+                    pass
 
 CONNECTION_LIST = []
 RECV_BUFFER = 4096 # Advisable to keep it as an exponent of 2
