@@ -70,8 +70,10 @@ class Hangman:
 
     def announce(self):
         """ Announces the word and lives left """
+        # joins every item from obscured_word with empty string
+        # alternative map(str, self.obscured_word)
         print("{} - You have {} lives left."
-              .format("".join(map(str, self.obscured_word)), self.lives))
+              .format("".join(i for i in self.obscured_word), self.lives))
 
     def make_guess(self, letter):
         """ Makes the guess """
@@ -88,6 +90,8 @@ hm = Hangman()
 hm.announce()
 
 hm.make_guess("t")
+hm.announce()
 hm.make_guess("e")
+hm.announce()
 hm.make_guess("s")
 hm.announce()
