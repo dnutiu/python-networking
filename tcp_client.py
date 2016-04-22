@@ -5,11 +5,7 @@ import socket
 import select
 import sys
 
-def prompt() :
-    sys.stdout.write("<You> ")
-    # sys.stdout.flush()
-
-if(len(sys.argv) < 3):
+if len(sys.argv) < 3:
     print("Usage : python {0} hostname port".format(sys.argv[0]))
     sys.exit()
 
@@ -22,7 +18,8 @@ s.settimeout(200)
 # connect to remote host
 try:
     s.connect((host, port))
-except:
+except Exception as msg:
+    print(type(msg).__name__)
     print("Unable to connect")
     sys.exit()
 
