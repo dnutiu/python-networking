@@ -65,6 +65,10 @@ class Hangman:
         else:
             self._invalid_guess()
 
+    def new_game(self):
+        print("Starting new Hangman game!")
+        self.__init__()
+
     def victory(self):
         """ Prints victory message and sets game status to win """
         print("Congratulations! You won the game!")
@@ -121,4 +125,6 @@ hm.announce()
 hm.make_guess("e")
 hm.announce()
 hm.make_guess("s")
+hm.announce()
+hm.new_game()
 hm.announce()
