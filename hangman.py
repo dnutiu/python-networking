@@ -12,6 +12,7 @@ class Hangman:
         self.word = random.choice(self.words)
         self.obscured_word = ["*" for i in self.word]
         self.letters = [] # Already guessed letters
+        self.letter = "" # guessed letters # TODO Remove letter param from func
         self.lives = 9
         self.guesses_left = len(self.word)
         self.game_status = 0 # 0 - on going, 1 - won, 2 - lost
@@ -31,42 +32,59 @@ class Hangman:
             self.guesses_left -= 1
             self._modify_obscured_word(letter, index + 1)
 
+    def _bad_guess(self, letter):
+        print("{} is not in the word. :(".format(letter))
+        self.lives -= 1
+        self.update_game_status()
+
+    def _good_guess(self, letter):
+        print("You guessed right!")
+        self._modify_obscured_word(letter)
+        self._modify_word(letter)
+        self.update_game_status()
+
+    def _invalid_guess(self, letter):
+        print("You need to chose a letter. {} is not a letter!"
+              .format(letter))
+        print("You lost a life.")
+        self.lives -= 1
+        self.update_game_status()
+
     def _perfom_guess(self, letter):
         """ Performs the guess by validating the guessed letter. """
         if letter in string.ascii_letters:
             self.letters.append(letter)
             if self._is_in_word(letter) >= 0:
-                print("You guessed right!")
-                self._modify_obscured_word(letter)
-                self._modify_word(letter)
-                self.update_game_status()
+                self._good_guess(letter)
             else:
-                print("{} is not in the word. :(".format(letter))
-                self.lives -= 1
-                self.update_game_status()
+                self._bad_guess(letter)
         else:
-            print("You need to chose a letter. {} is not a letter!"
-                  .format(letter))
-            print("You lost a life.")
-            self.lives -= 1
-            self.update_game_status()
+            self._invalid_guess(letter)
 
     def victory(self):
         """ Prints victory message and sets game status to win """
         print("Congratulations! You won the game!")
-        self.game_status = 1
 
     def defeat(self):
         """ Prints defeat message and sets game status to lost """
         print("Congratulations! You lost the game!")
-        self.game_status = 2
+
+    def game_over(self):
+        if self.game_status == 1:
+            self.victory()
+        elif self.game_status == 2:
+            self.defeat()
+
+    def get_game_status(self):
+        """ Returns the game status. 1 - won, 2 - lost, 0 on going"""
+        return self.game_status
 
     def update_game_status(self):
         """ Updates the game status. """
         if self.guesses_left == 0:
-            self.victory()
+            self.game_status = 1
         elif self.lives == 0:
-            self.defeat()
+            self.game_status = 2
 
     def announce(self):
         """ Announces the word and lives left """
