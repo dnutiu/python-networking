@@ -17,6 +17,10 @@ class Hangman:
         self.guesses_left = len(self.word)
         self.game_status = 0 # 0 - on going, 1 - won, 2 - lost
 
+    def _obscured_word_str(self):
+        """ Transforms obscured_word arrat into a string. """
+        return "".join(i for i in self.obscured_word)
+
     def _is_in_word(self, guess):
         """Returns the index position of the guess from the word"""
         return self.word.find(guess)
@@ -64,10 +68,12 @@ class Hangman:
     def victory(self):
         """ Prints victory message and sets game status to win """
         print("Congratulations! You won the game!")
+        print("The word was: {}".format(self._obscured_word_str()))
 
     def defeat(self):
         """ Prints defeat message and sets game status to lost """
         print("Congratulations! You lost the game!")
+        print("The word was: {}".format(self._obscured_word_str()))
 
     def game_over(self):
         if self.game_status == 1:
@@ -87,11 +93,14 @@ class Hangman:
             self.game_status = 2
 
     def announce(self):
-        """ Announces the word and lives left """
-        # joins every item from obscured_word with empty string
-        # alternative map(str, self.obscured_word)
-        print("{} - You have {} lives left."
-              .format("".join(i for i in self.obscured_word), self.lives))
+        """ Announces the word and lives left or if the game has ended. """
+        if self.game_status == 1:
+            self.victory()
+        elif self.game_status == 2:
+            self.defeat()
+        else:
+            print("{} - You have {} lives left."
+                  .format(self._obscured_word_str(), self.lives))
 
     def make_guess(self, letter):
         """ Makes the guess """
