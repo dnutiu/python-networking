@@ -3,20 +3,20 @@
 import socket
 import select
 
-def broadcast_data(SOCKET, message):
-    """ Sends a message to all sockets in the connection list except for itself. """
-    # Do not send the message to master socket and the client who has send us the message
-    for SOCKET in CONNECTION_LIST:
-        if SOCKET != SERVER_SOCKET:
+def broadcast_data(message):
+    """ Sends a message to all sockets in the connection list. """
+    # Send message to everyone, except the server.
+    for sock in CONNECTION_LIST:
+        if sock != SERVER_SOCKET:
             try:
-                SOCKET.sendall(message)
-            except Exception as msg: # Connection was closed.
+                sock.sendall(message) # send all data at once
+            except Exception as msg: # Connection was closed. Errors
                 print(type(msg).__name__)
-                SOCKET.close()
+                sock.close()
                 try:
-                    CONNECTION_LIST.remove(SOCKET)
-                except ValueError:
-                    pass
+                    CONNECTION_LIST.remove(sock)
+                except ValueError as msg:
+                    print("{}:{}".format(type(msg).__name__, msg))
 
 CONNECTION_LIST = []
 RECV_BUFFER = 4096 # Advisable to keep it as an exponent of 2
@@ -40,25 +40,29 @@ while True:
         if SOCK == SERVER_SOCKET:
             SOCKFD, ADDR = SERVER_SOCKET.accept()
             CONNECTION_LIST.append(SOCKFD) # add socket descriptor
-            print("Client ({0}, {1}) connected".format(ADDR[0], ADDR[1]))
-            broadcast_data(SOCKFD, "Client ({0}:{1}) entered room\n"
+            # Adding \r to prevent message overlapping when another user
+            # types it's message.
+            print("\rClient ({0}, {1}) connected".format(ADDR[0], ADDR[1]))
+            broadcast_data("Client ({0}:{1}) entered room\n"
                            .format(ADDR[0], ADDR[1]).encode())
         else: # Some incoming message from a client
             try: # Data recieved from client, process it
                 DATA = SOCK.recv(RECV_BUFFER)
                 if DATA:
-                    message = "[{}:{}]:{}".format(ADDR[0], ADDR[1], DATA.decode())
+                    ADDR = SOCK.getpeername() # get remote address of the socket
+                    message = "\r[{}:{}]: {}".format(ADDR[0], ADDR[1], DATA.decode())
                     print(message, end="")
-                    broadcast_data(SOCK, message.encode())
-            except Exception as msg:
+                    broadcast_data(message.encode())
+            except Exception as msg: # Errors happened, client disconnected
                 print(type(msg).__name__, msg)
-                broadcast_data(SOCK, "Client ({0}, {1}) is offline\n"
+                print("\rClient ({0}, {1}) disconnected.".format(ADDR[0], ADDR[1]))
+                broadcast_data("\rClient ({0}, {1}) is offline\n"
                                .format(ADDR[0], ADDR[1]).encode())
                 SOCK.close()
                 try:
                     CONNECTION_LIST.remove(SOCK)
-                except ValueError:
-                    print("Can't remove element.")
+                except ValueError as msg:
+                    print("{}:{}.".format(type(msg).__name__, msg))
                 continue
 
 SERVER_SOCKET.close()
