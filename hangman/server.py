@@ -1,5 +1,5 @@
 #!/usr/bin python3
-""" A simple chat TCP server """
+""" A simple TCP server for playing Hagman """
 import socket
 import select
 import hangman
