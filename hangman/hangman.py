@@ -12,7 +12,6 @@ class Hangman:
 
     def __init__(self, broadcast_function=print):
         self._letter = "" # guessed letter, used internally
-        random.seed(None) # Use current system time when generating random nums
         self.broadcast = broadcast_function
         try:
             self._load_words()
