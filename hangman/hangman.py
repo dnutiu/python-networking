@@ -4,24 +4,27 @@ import string
 import random
 import csv
 
+# TODO Add score perhaps?
+
 class Hangman:
     """ A simple Hangman class for playing the hangman game. """
     words = []
 
-    def __init__(self):
+    def __init__(self, broadcast_function=print):
         self._letter = "" # guessed letter, used internally
         random.seed(None) # Use current system time when generating random nums
-
+        self.broadcast = broadcast_function
         try:
             self._load_words()
             self.word = random.choice(self.words)
         except IndexError:
-            print("Cannot make choices!")
+            print("Error: Cannot make choices!\n")
             self.word = "Error"
         except FileNotFoundError:
-            print("File: words.csv not found!")
+            print("Error: File words.csv not found!\n")
             self.word = "Error"
 
+        self.original_world = self.word
         self.obscured_word = ["*" for i in self.word]
         self.guesses_left = len(self.word.replace(" ", "")) # remove spaces
         self.letters = [] # Already guessed letters
@@ -57,20 +60,22 @@ class Hangman:
             self._modify_obscured_word(index + 1)
 
     def _bad_guess(self):
-        print("{} is not in the word. :(".format(self._letter))
+        message = "{} is not in the word. :(\n".format(self._letter)
+        self.broadcast(message)
         self.lives -= 1
         self.update_game_status()
 
     def _good_guess(self):
-        print("You guessed right!")
+        message = "You guessed right!\n"
+        self.broadcast(message)
         self._modify_obscured_word()
         self._modify_word()
         self.update_game_status()
 
     def _invalid_guess(self):
-        print("You need to chose a letter. {} is not a letter!"
-              .format(self._letter))
-        print("You lost a life.")
+        message = """You need to chose a letter. {} is not a letter!
+You lost a life.\n""".format(self._letter)
+        self.broadcast(message)
         self.lives -= 1
         self.update_game_status()
 
@@ -86,18 +91,24 @@ class Hangman:
             self._invalid_guess()
 
     def new_game(self):
-        print("Starting new Hangman game!")
-        self.__init__()
+        message = "Starting new Hangman game!\n"
+        print("Staring new game!")
+        self.broadcast(message)
+        self.__init__(self.broadcast)
 
     def victory(self):
         """ Prints victory message and sets game status to win """
-        print("Congratulations! You won the game!")
-        print("The word was: {}".format(self._obscured_word_str()))
+        message = """Congratulations! You won the game!
+The word was: {}\n""".format(self.original_world)
+        print("Users achieved victory!")
+        self.broadcast(message)
 
     def defeat(self):
         """ Prints defeat message and sets game status to lost """
-        print("Congratulations! You lost the game!")
-        print("The word was: {}".format(self._obscured_word_str()))
+        message = """Congratulations! You lost the game!
+The word was: {}\n""".format(self.original_world)
+        print("Users lost!")
+        self.broadcast(message)
 
     def game_over(self):
         if self.game_status == 1:
@@ -123,13 +134,15 @@ class Hangman:
         elif self.game_status == 2:
             self.defeat()
         else:
-            print("{} - You have {} lives left."
-                  .format(self._obscured_word_str(), self.lives))
+            message = "{} - You have {} lives left.\n".format(self._obscured_word_str(), self.lives)
+            print(message)
+            self.broadcast(message)
 
     def make_guess(self, letter):
         """ Makes the guess """
         self._letter = letter.lower()
         if self._letter in self.letters:
-            print("You already said {}".format(self._letter))
+            message = "You already said {}\n".format(self._letter)
+            self.broadcast(message)
         else:
             self._perfom_guess()
