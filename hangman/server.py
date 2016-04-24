@@ -8,6 +8,7 @@ CONNECTION_LIST = []
 SERVER_SOCKET = ""
 
 def broadcast_all_encode(message):
+    """ Encodes the message then it broadcasts it to everyone. """
     broadcast_all(message.encode())
 
 def broadcast_all(message):
