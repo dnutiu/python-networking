@@ -6,22 +6,36 @@ import csv
 
 class Hangman:
     """ A simple Hangman class for playing the hangman game. """
-    words = [] # TODO Make a new way of generating words, perhaps a file?
+    words = []
 
     def __init__(self):
         self._letter = "" # guessed letter, used internally
         random.seed(None) # Use current system time when generating random nums
 
         try:
+            self._load_words()
             self.word = random.choice(self.words)
         except IndexError:
-            print("Cannot make choices! ")
+            print("Cannot make choices!")
             self.word = "Error"
+        except FileNotFoundError:
+            print("File: words.csv not found!")
+            self.word = "Error"
+
         self.obscured_word = ["*" for i in self.word]
         self.guesses_left = len(self.word.replace(" ", "")) # remove spaces
         self.letters = [] # Already guessed letters
         self.lives = 9
         self.game_status = 0 # 0 - on going, 1 - won, 2 - lost
+
+    def _load_words(self):
+        try:
+            with open("words.csv", newline="") as csvfile:
+                reader = csv.reader(csvfile, delimiter=',')
+                for row in reader:
+                    self.words += row
+        except FileNotFoundError:
+            raise FileNotFoundError
 
     def _obscured_word_str(self):
         """ Transforms obscured_word arrat into a string. """
@@ -119,18 +133,3 @@ class Hangman:
             print("You already said {}".format(self._letter))
         else:
             self._perfom_guess()
-
-
-
-
-hm = Hangman()
-hm.announce()
-
-hm.make_guess("t")
-hm.announce()
-hm.make_guess("e")
-hm.announce()
-hm.make_guess("s")
-hm.announce()
-hm.new_game()
-hm.announce()
