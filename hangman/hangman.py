@@ -90,6 +90,7 @@ You lost a life.\n""".format(self._letter)
             self._invalid_guess()
 
     def new_game(self):
+        """ Starts a new game. """
         message = "Starting new Hangman game!\n"
         print("Staring new game!")
         self.broadcast(message)
