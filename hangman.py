@@ -2,19 +2,25 @@
 "A simple Hangman program"
 import string
 import random
+import csv
 
 class Hangman:
     """ A simple Hangman class for playing the hangman game. """
-    words = ["test", "test2"] # TODO Make a new way of generating words, perhaps a file?
+    words = [] # TODO Make a new way of generating words, perhaps a file?
+
     def __init__(self):
         self._letter = "" # guessed letter, used internally
         random.seed(None) # Use current system time when generating random nums
 
-        self.word = random.choice(self.words)
+        try:
+            self.word = random.choice(self.words)
+        except IndexError:
+            print("Cannot make choices! ")
+            self.word = "Error"
         self.obscured_word = ["*" for i in self.word]
+        self.guesses_left = len(self.word.replace(" ", "")) # remove spaces
         self.letters = [] # Already guessed letters
         self.lives = 9
-        self.guesses_left = len(self.word)
         self.game_status = 0 # 0 - on going, 1 - won, 2 - lost
 
     def _obscured_word_str(self):
