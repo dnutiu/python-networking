@@ -87,7 +87,7 @@ while True:
                 print(type(msg).__name__, msg)
                 print("\rClient ({0}, {1}) disconnected.".format(ADDR[0], ADDR[1]))
                 broadcast_all("\rClient ({0}, {1}) is offline\n"
-                               .format(ADDR[0], ADDR[1]).encode())
+                              .format(ADDR[0], ADDR[1]).encode())
                 SOCK.close()
                 try:
                     CONNECTION_LIST.remove(SOCK)
